@@ -1,23 +1,24 @@
 # Makefile to interact with terraform
 SHELL := /bin/bash
 
-
-begin: plan
+ACCOUNT := lw-infra
+SERVICE := tools
+IMAGE := $(ACCOUNT)/$(SERVICE)
+TAG := latest
 
 clean:
 	@echo "clean"
 
-init: clean
-	@echo "init"
+build: clean
+	$(info Make: Building.)
+	@docker build -t $(IMAGE):$(TAG) .
 
-refresh: init
-	@echo "refresh"
+run: build
+	$(info Make: Running.)
+	@docker run -dt --name $(SERVICE) -v ~/$(ACCOUNT):/usr/local/lw-tools $(IMAGE):$(TAG)
 
-plan: init
-	@echo "plan"
-
-apply:
-	@echo "apply"
-
-destroy: init
-	@echo "destroy"
+destroy:
+	$(info Make: Destroying.)
+	docker container stop $(SERVICE)
+	docker container rm $(SERVICE) --force
+	docker image rm $(IMAGE):$(TAG) --force
