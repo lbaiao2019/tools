@@ -1,1 +1,1 @@
-0 * * * * git clone https://github.com/lbaiao2019/tools.git && mv tools/Makefile /usr/local/lw-tools/Makefile && rm -fr tools
+0 * * * * git clone https://github.com/lbaiao2019/tools.git && cp tools/tools/Makefile /usr/local/lw-tools/Makefile && rm -fr tools
