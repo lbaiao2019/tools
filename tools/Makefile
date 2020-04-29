@@ -51,20 +51,22 @@ export AWS_DEFAULT_REGION=$(REGION)
 begin: plan
 
 clean:
-	@echo ${SF_KEY}
-	@echo "clean"
+	rm -rf .terraform ./modules tfplan
 
 init: clean
-	@echo "init"
+	terraform get .
+	terraform init -backend-config="bucket=$(SF_BUCKET)" -backend-config="key=$(SF_KEY)" -backend-config="region=$(SF_REGION)"
 
 refresh: init
-	@echo "refresh"
+	terraform refresh $(VARS) $(VARFILE) .
 
 plan: init
-	@echo "plan"
+	terraform plan -detailed-exitcode $(VARS) $(VARFILE) -out tfplan .;EXC=$$?;if [ $$EXC -eq 1 ]; then exit 1; else if [ $$EXC -eq 0 ]; then rm -f tfplan; fi; exit 0; fi;
 
 apply:
-	@echo "apply"
+	terraform apply tfplan
+	rm tfplan
 
 destroy: init
-	@echo "destroy"
+	terraform plan -destroy $(VARS) $(VARFILE) .
+	terraform destroy $(VARS) $(VARFILE) .
